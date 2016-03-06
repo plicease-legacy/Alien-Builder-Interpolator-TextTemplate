@@ -30,9 +30,9 @@ subtest 'helper' => sub {
     helpers => { ab => '"ab" . "bc"', p2 => '"%{ab}"', p3 => "'%a'" },
   );
   
-  is $itr->interpolate('hi { $helper->ab } there'), "hi abbc there", 'simple helper';
-  is $itr->interpolate('hi { $helper->ab } { $helper->p2 } there'), "hi abbc %{ab} there", "helper with %{}";
-  is $itr->interpolate('hi { $helper->ab } { $helper->p3 } { $a } there'), "hi abbc %a abc there", 'helper with %.';
+  is $itr->interpolate('hi { $ab } there'), "hi abbc there", 'simple helper';
+  is $itr->interpolate('hi { $ab } { $p2 } there'), "hi abbc %{ab} there", "helper with %{}";
+  is $itr->interpolate('hi { $ab } { $p3 } { $a } there'), "hi abbc %a abc there", 'helper with %.';
 
 };
 

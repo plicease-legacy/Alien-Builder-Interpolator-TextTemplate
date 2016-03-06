@@ -26,33 +26,37 @@ sub interpolate
     TYPE   => 'STRING',
     SOURCE => $string,
   );
-  
-  my $helper = Alien::Builder::Interpolator::TextTemplate::Helpers->new($self);
-  
+    
   $template->fill_in(
     PACKAGE => 'Foo',
     HASH => {
       %{ $self->vars },
-      helper => \$helper,
+      map { tie my $helper, 'Alien::Builder::Interpolator::TextTemplate::Helper', $self, $_; $_ => $helper } keys %{ $self->helpers },
     },
   );
 }
 
-package Alien::Builder::Interpolator::TextTemplate::Helpers;
+package Alien::Builder::Interpolator::TextTemplate::Helper;
 
 use strict;
 use warnings;
-use Object::Method ();
+use Carp qw( croak );
 
-sub new
+sub TIESCALAR
 {
-  my($class, $interpolator) = @_;
-  my $self = bless { }, $class;
-  foreach my $method (keys %{ $interpolator->helpers })
-  {
-    Object::Method::method($self, $method => sub { $interpolator->execute_helper($method) });
-  }
-  $self;
+  my($class, $interpolator, $name) = @_;
+  bless { interpolator => $interpolator, name => $name }, $class;
+}
+
+sub FETCH
+{
+  my($self) = @_;
+  $self->{interpolator}->execute_helper($self->{name});
+}
+
+sub STORE
+{
+  croak "helpers are read-only";
 }
 
 1;

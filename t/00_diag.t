@@ -10,9 +10,8 @@ my %modules;
 my $post_diag;
 
 $modules{$_} = $_ for qw(
-  Alien::Builder::Interpolator
+  Alien::Builder
   ExtUtils::MakeMaker
-  Object::Method
   Test::More
   Text::Template
 );
